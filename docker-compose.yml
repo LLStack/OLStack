@@ -1,0 +1,96 @@
+version: '3'
+services:
+  mysql:
+    image: ${MySQLTYPE}:${MySQLVER}
+    container_name: mysql
+    command: --max_allowed_packet=256M
+    volumes:
+      - "./data/mysql:/var/lib/mysql:delegated"
+    ports:
+       - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
+  litespeed:
+    build:                                                                                                             
+      context: ./Dockerfile/${LITESPEED}/${PHPVER}/                                                                        
+      args:
+              #extensions: lsphp72 lsphp72-common lsphp72-mysql lsphp72-json                                                                                    
+        extensions:
+    container_name: litespeed
+    image: llstack/olstack:${LITESPEED}-${PHPVER}
+    env_file:
+      - .env
+    volumes:
+        - ./Configfile/lsws/conf:/usr/local/lsws/conf
+        - ./Configfile/lsws/admin-conf:/usr/local/lsws/admin/conf
+        - ./bin/container:/usr/local/bin
+        - ./sites:/var/www/vhosts/
+        - ./certs:/etc/letsencrypt/
+        - ./logs/lsws/:/usr/local/lsws/logs/
+    ports:
+      - 80:80
+      - 443:443
+      - 443:443/udp
+      - 7080:7080
+    environment:
+      - TZ=${TimeZone}
+    restart: always
+    depends_on: 
+      - mysql
+      - redis
+
+  adminer:
+    image: dockette/adminer:full
+    container_name: adminer
+    ports:
+      - 8080:80
+    environment:
+      - MEMORY=-1
+
+#  phpmyadmin:
+#    image: phpmyadmin/phpmyadmin:latest
+#    container_name: phpmyadmin
+#    ports:
+#      - "8081:80"
+#    environment:
+#      - PMA_HOST=mysql
+#      - PMA_PORT=3306
+#      - TZ=${TimeZone}
+
+  redis:
+    image: redis:${REDIS_VERSION}
+    sysctls:
+      net.core.somaxconn: '511'
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./Configfile/redis/redis.conf:/etc/redis.conf
+      - ./data/redis/data:/data
+      - ./logs/redis/:/var/log/redis/
+    restart: always
+    entrypoint: ["redis-server", "/etc/redis.conf"]
+    environment:
+      - TZ=${TimeZone}
+
+#  memcached:
+#    image: memcached:${MEMCACHED_VERSION}
+#    container_name: memcached
+#    ports:
+#      - "11211:11211"
+#    environment:
+#      MEMCACHED_CACHE_SIZE: "${MEMCACHED_CACHE_SIZE}"
+
+#  phpredisadmin:
+#    image: erikdubbelboer/phpredisadmin:latest
+#    container_name: phpredisadmin
+#    ports:
+#      - "8082:80"
+#    environment:
+#      - REDIS_1_HOST=redis
+#      - REDIS_1_PORT=6379
+#      - TZ=${TimeZone}
