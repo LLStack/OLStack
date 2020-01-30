@@ -1,122 +1,469 @@
-# OpenLiteSpeed WordPress Docker Container (Beta)
-[![Build Status](https://travis-ci.com/litespeedtech/ols-docker-env.svg?branch=master)](https://hub.docker.com/r/litespeedtech/openlitespeed)
-[![OpenLiteSpeed](https://img.shields.io/badge/openlitespeed-1.6.5-informational?style=flat&color=blue)](https://hub.docker.com/r/litespeedtech/openlitespeed)
-[![docker pulls](https://img.shields.io/docker/pulls/litespeedtech/openlitespeed-beta?style=flat&color=blue)](https://hub.docker.com/r/litespeedtech/openlitespeed-beta)
+# 介绍
 
-Install a Lightweight WordPress container with OpenLiteSpeed 1.6.5+ & PHP 7.3+ based on Ubuntu 18.04 Linux.
+官方支持网站：https://www.llstack.com/ols/
 
-### Prerequisites
-1. [Install Docker](https://www.docker.com/)
-2. [Install Docker Compose](https://docs.docker.com/compose/)
-3. Clone this repository or copy the files from this repository into a new folder:
-```
-git clone https://github.com/litespeedtech/ols-docker-env.git
-```
+**OLStack 社区容器版**，是基于 Docker 容器化编排的 OpenLiteSpeed 环境。性能比Nginx更胜一筹，基本兼容 Apache HTTPD 生态，主要是不支持自动加载 .htaccss 文件，该版本对操作系统环境没有限制，未来可以应用到非常多的场景中。
 
-## Configuration
-Edit the `.env` file to update the demo site domain, default MySQL user, and password.
+这是 [litespeedtech](https://github.com/litespeedtech)/**[ols-docker-env](https://github.com/litespeedtech/ols-docker-env)** 的一个复克（Fork）。
 
-## Installation
-Open a terminal, `cd` to the folder in which `docker-compose.yml` is saved, and run:
-```
-docker-compose up
+# 安装环境
+
+## 国内服务器准备环境
+
+一、安装 Docker 环境，已有可以跳过
+
+```bash
+curl -sSL https://get.daocloud.io/docker | sh   
 ```
 
-## Components
-The docker image installs the following packages on your system:
+二、安装 Docker-Compose 环境，其中`1.25.3`  可以根据 [**最新版本**](https://github.com/docker/compose/releases) 修改，已有可以跳过
 
-|Component|Version|
-| :-------------: | :-------------: |
-|Linux|Ubuntu 18.04|
-|OpenLiteSpeed|[Latest version](https://openlitespeed.org/downloads/)|
-|MariaDB|[Stable version: 10.3](https://hub.docker.com/_/mariadb)|
-|PHP|[Stable version: 7.3](http://rpms.litespeedtech.com/debian/)|
-|LiteSpeed Cache|[Latest from WordPress.org](https://wordpress.org/plugins/litespeed-cache/)|
-|Certbot|[Latest from Certbot's PPA](https://launchpad.net/~certbot/+archive/ubuntu/certbot)|
-|WordPress|[Latest from WordPress](https://wordpress.org/download/)|
-
-## Data Structure
-There is a `sites` directory next to your `docker-compose.yml` file, and it contains the following:
-
-* `sites/DOMAIN/html/` – Document root (the WordPress application will install here)
-* `sites/DOMAIN/logs/` - Access log storage
-
-## Usage
-### Starting a Container
-Start the container with the `up` or `start` methods:
+```bash
+curl -L https://get.daocloud.io/docker/compose/releases/download/1.25.3/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
 ```
-docker-compose up
+
+三、下载 OLStack
+
+```bash
+## 没有下载 git 的可以通过 apt install git -y 或者 yum install git -y 安装
+git clone https://gitee.com/LLStack/OLStack.git
+cd OLStack
 ```
-You can run with daemon mode, like so:
+
+## 海外服务器准备环境
+
+一、安装 Docker 环境，已有可以跳过
+
+```bash
+curl -s https://get.docker.com | sudo sh
 ```
+
+二、安装 Docker-Compose 环境，其中`1.25.3`  可以根据 [**最新版本**](https://github.com/docker/compose/releases) 修改，已有可以跳过
+
+```bash
+curl -L https://github.com/docker/compose/releases/download/1.25.3/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+```
+
+三、下载 OLStack
+
+```bash
+## 没有下载 git 的可以通过 apt install git -y 或者 yum install git -y 安装
+git clone https://github.com/LLStack/OLStack.git
+cd OLStack
+```
+
+## 编辑配置文件
+
+四、编辑 `.env` 和 `docker-compose.yml`文件：
+
+ `.env` 文件包括了对一些版本的定义。 可以具体看 .env 说明解析。
+
+`docker-compose.yml`文件则是定义具体安装什么容器组件，包括 Redis、phpmyadmin 等。 可以具体看 docker-compose.yml 解析。
+
+```bash
+vi .env
+vi docker-compose.yml
+```
+
+::: tip 提示
+不会 vi 的同学，可以用 FileZilla、XFTP 这类的支持 SFTP 协议的软件，将文件下载后编辑再上传。
+:::
+
+五、 启动容器
+
+```bash
 docker-compose up -d
 ```
-The container is now built and running. 
 
-### Stopping a Container
+六、 启动说明：
+
+```bash
+docker-compose up ## 临时启动所有容器
+docker-compose up -d ## 持久化启动所有容器
+docker-compose stop ## 停止容器运行
+docker-compose down ## 停止和删除所有容器
 ```
-docker-compose stop
+
+# 配置说明
+
+## .ENV配置
+
+ `.env` 文件包括了对一些版本的定义，由于是 `.` 开头的文件，可能在部分电脑显示中是隐藏的，所以需要开放显示隐藏的文件。
+
+**说明如下：**
+
+**一、时区设置**，定义所在业务的时区。默认是 `Asia/Shanghai`，例如服务的是美国东部的，则可以修改为 `America/New_York` 纽约时间。
+
+```bash
+TimeZone=Asia/Shanghai
 ```
-### Removing Containers
-To stop and remove all containers, use the `down` command:
+
+**二、OpenLiteSpeed 版本**，目前 OLS 提供了 1.6.X 和 1.5.X 两个版本，未来可能提供更多的版本。
+
+```bash
+LITESPEED=ols1.6
 ```
-docker-compose down
+
+可供修改的选项：`ols1.6` 、`ols1.5`
+
+**三、PHP版本**，由 LiteSpeed 官方提供支持的 LSPHP 版本，和很多虚拟主机使用的企业版是一样的。
+
+```bash
+PHPVER=php73
 ```
-### Installing Packages
-Edit the `docker-compose.yml` file, and add the package name as an `extensions` argument. We used `vim` in this example:
+
+目前提供了：`php74`、`php73`、`php72`、`php71`、`php70`、`php56`、`php55`、`php54`、`php53`
+
+不同的 PHP 版本底层基于的 Ubuntu 版本也不一样。
+
+- php70～74 底层系统为 Ubuntu 18.04。
+- php54～56 底层系统为 Ubuntu 16.04。 **PHP不受官方支持**
+- php53 底层系统为 Ubuntu 14.04。 **PHP和系统均不受官方支持，仅建议测试**
+
+::: tip 提示
+PHP 每个版本的官方生命支持周期是三年，如果程序支持建议安装最新版本
+查看PHP版本支持情况：http://php.net/supported-versions.php
+:::
+
+**四、MySQLTYPE**，运行数据库的类型。
+
+```bash
+MySQLTYPE=mariadb
 ```
-litespeed:
-  build:
-    context: ./config/litespeed/xxx/
-    args:
-      extensions: vim
+
+可供修改的选项：`mariadb` 、`percona`
+
+MariaDB 和 Percona 更开发并且提供更多的功能选项比默认的 MySQL 好用。
+
+**五、MySQLVER**，数据库的具体版本。
+
+```bash
+MySQLVER=10.3
 ```
-After saving the changed configuration, run with `--build`:
+
+MariaDB 目前提供了：`10.4` 、`10.3`、 `10.2`  （兼容 MySQL5.7）  `10.1` （兼容MySQL5.6）
+
+Percona 目前提供了：`8.0` 、`5.7`、 `5.6`  （这个兼容关系，不说你也知道）
+
+::: tip 提示
+由于 Docker 容器的便利性，大家如果需要 PostGreSQL、SQL Server、MongoDB、Elasticsearch 都可以直接修改 `docker-compose.yml`文件来进行实现的。
+:::
+
+**六、创建的默认数据库和用户**
+
+```bash
+## 默认数据库名称
+MYSQL_DATABASE=llstack
+## 默认数据库 root 账号密码
+MYSQL_ROOT_PASSWORD=password
+## 默认的新建用户名
+MYSQL_USER=llstack
+## 默认的新建用户密码
+MYSQL_PASSWORD=password
 ```
+
+**七、REDIS_VERSION**，Redis的版本配置
+
+```bash
+REDIS_VERSION=5.0-alpine
+```
+
+可供修改的选项：`6.0-rc-alpine`、`5.0-alpine`、`4.0-alpine`、`3.2-alpine`、`2.8`
+
+**八、MEMCACHED_VERSION，** 配置 Memcached 的版本。 **如果要使用，请把最前面的 `#` 去掉**
+
+```bash
+#MEMCACHED_VERSION=1.5-alpine
+```
+
+可供修改的选项：`1.5-alpine`、`1.4-alpine`
+
+**九、MEMCACHED_CACHE_SIZE，** 配置 Memcached 的缓存大小，根据服务器实际内存情况选择，建议是服务器内存的 1/8。**如果要使用，请把最前面的 `#` 去掉**
+
+```bash
+#MEMCACHED_CACHE_SIZE=128
+```
+
+**十、DOMAIN**，默认配置的域名，可以保持默认，也可以输入为自己的默认域名，建议后面新建主机。
+
+```bash
+DOMAIN=localhost
+```
+
+## docker-compose.yml 配置
+
+`docker-compose.yml` 模板文件是使用 Docker Compose 的核心，涉及到的指令关键字也比较多。
+
+如果有需要学习的同学可以查看文档：**[Compose 模板文件](https://yeasy.gitbooks.io/docker_practice/compose/compose_file.html)**
+
+这里举例几个 OLStack 的修改方案：
+
+**一、安装预装软件**
+
+```yaml {6}
+  litespeed:
+    build:                                                                                                             
+      context: ./Dockerfile/${LITESPEED}/${PHPVER}/                                                                        
+      args:
+        #extensions: lsphp72 lsphp72-common lsphp72-mysql lsphp72-json                                                                                    
+        extensions:
+```
+
+`extensions:` 后可以跟 http://rpms.litespeedtech.com/ 中提供的 LSPHP 软件，和 Ubuntu 默认提供的软件。
+
+**二、挂载目录**
+
+```yaml
+    volumes:
+        - ./Configfile/lsws/conf:/usr/local/lsws/conf
+        - ./Configfile/lsws/admin-conf:/usr/local/lsws/admin/conf
+        - ./bin/container:/usr/local/bin
+        - ./sites:/var/www/vhosts/
+        - ./certs:/etc/letsencrypt/
+        - ./logs/lsws/:/usr/local/lsws/logs/
+```
+
+`:`前的是宿主机（这台服务器）的对应目录，这里使用相对路径。`:`后的是容器主机所对应的目录，如果有其他的目录挂载需求可以修改`volumes:`进行挂载。
+
+**三、开放的端口**
+
+```yaml
+    ports:
+      - 80:80
+      - 443:443
+      - 443:443/udp
+      - 7080:7080
+```
+
+这里开放了三个TCP端口：80（HTTP）、443（HTTPS）和7080（OLS后台）。
+
+还有一个UDP端口：443（QUIC、HTTP/3）
+
+如果有更多的需求，可以新增新的端口。
+
+安全起见，可以将`- 7080:7080` 修改为更安全的例如：`- 27080:7080` 这样的非默认端口，减少被安全攻击的可能。
+
+**四、启动带#的功能**
+
+默认绿的带 `#` 的都是不启用的功能：
+
+```yaml
+#  phpmyadmin:
+#    image: phpmyadmin/phpmyadmin:latest
+#    container_name: phpmyadmin
+#    ports:
+#      - "8081:80"
+#    environment:
+#      - PMA_HOST=mysql
+#      - PMA_PORT=3306
+#      - TZ=${TimeZone}
+```
+
+像 phpmyadmin、phpredisadmin、memcached 目前都是默认关闭的。 如果有需要需要去掉最前面的`#`，然后重新运行容器编排。
+
+::: warning 警告
+adminer、phpmyadmin、phpredisadmin 在不使用的时候，建议关闭。
+:::
+
+# 目录结构
+
+### LiteSpeed 容器
+
+```yaml
+    volumes:
+        - ./Configfile/lsws/conf:/usr/local/lsws/conf  ## OLS的配置文件目录
+        - ./Configfile/lsws/admin-conf:/usr/local/lsws/admin/conf  ## OLS的管理控制台目录
+        - ./bin/container:/usr/local/bin  ## 相关工具文件
+        - ./sites:/var/www/vhosts/  ## 虚拟主机存放的位置
+        - ./certs:/etc/letsencrypt/  ## Let's Encrypt 生成的证书存放地址
+        - ./logs/lsws/:/usr/local/lsws/logs/  ##OLS 的日志地址
+```
+
+最重要的是 `- ./sites:/var/www/vhosts/` 和 `- ./logs/lsws/:/usr/local/lsws/logs/`
+
+这里是一个相对路径，如果 OLStack 的目录在 `/home/webserver/OLStack` 那么`./sites`的实际路径就是 `/home/webserver/OLStack/OLStack`。
+
+如果有额外数据盘的服务器，那么建议将 OLStack 目录放在数据盘下运行。
+
+### MySQL 容器
+
+```yaml
+    volumes:
+      - "./data/mysql:/var/lib/mysql:delegated"
+```
+
+`./data/mysql`存放数据库物理文件的目录。
+
+有自定义修改 `my.cnf` 需求的同学，可以修改 docker-compose.yml 文件挂载对应文件。
+
+### Redis-Server 容器
+
+```yaml
+    volumes:
+      - ./Configfile/redis/redis.conf:/etc/redis.conf
+      - ./data/redis/data:/data
+      - ./logs/redis/:/var/log/redis/
+```
+
+`- ./Configfile/redis/redis.conf:/etc/redis.conf` 配置文件，有中文注释
+
+` - ./data/redis/data:/data` 持久化物理文件目录
+
+`- ./logs/redis/:/var/log/redis/` Redis-Server日志目录
+
+# 使用说明
+
+::: warning 提示
+使用下面的命令好，首先得进入`OLStack` 目录
+:::
+
+### 修改 LiteSpeed WebAdmin 密码
+
+```bash
+bash bin/webadmin.sh <your_password>
+```
+
+例如我想要修改为`123456` 那么输入：
+
+```bash 
+bash bin/webadmin.sh 123456
+```
+
+### 创建虚拟主机
+
+```bash
+bash bin/domain.sh -add <your_domain.com>
+```
+
+例如我想要创建域名为 `mf8.biz` 的虚拟主机那么输入，自带 `www.` 不需要重复输入：
+
+```bash
+bash bin/domain.sh -add mf8.biz
+```
+
+### 删除虚拟主机
+
+```bash
+domain.sh -del <your_domain.com>
+```
+
+### 创建数据库
+
+下面命令会自动生成用户名、密码和数据库名。使用以下内容自动生成：
+
+```
+bash bin/database.sh -domain <your_domain.com>
+```
+
+用如下方式进行自定义用户名、密码和数据库名，替换`user_name`，`my_password`以及`database_name`为想要的值：
+
+```
+bash bin/database.sh -domain <your_domain.com> -user user_name -password my_password -database database_name
+```
+
+### 连接数据库
+
+正常使用数据库，在站库不分离的场景下一般数据库连接地址都是填写：`127.0.0.1`或者`localhost`。
+
+在 Docker 环境中，因为数据库和执行语言是分开运行的，所以并不是在同一台“服务器”当中，自然无法使用本地连接地址。我们需要使用 `mysql` 来进行代替。
+
+# 使用说明
+
+### 配置SSL证书
+
+首先得确保相关域名的虚拟主机已经创建，并且解析已经做对。 将使用 CertBot 自动创建 Let's Encrypt 免费SSL证书。
+
+```bashba s
+./bin/cert.sh <your_domain.com>
+```
+
+### 更新版本
+
+要将 OpenLiteSpeed 升级到最新的稳定版本，请运行
+
+```bash
+bash bin/webadmin.sh -lsup
+```
+
+### 进入容器内部
+
+```bash
+docker exec -it litespeed /bin/sh # 进入 OpenLiteSpeed、PHP 容器
+docker exec -it mysql /bin/bash # 进入 MariaDB/Percona Server容器
+docker exec -it redis /bin/sh # 进入 Redis Server容器
+```
+
+只要定义了容器名称：container_name ，那么替换 <container_name> 为容器名称的名字即可进入。
+
+```bash
+docker exec -it <container_name> /bin/sh 
+```
+
+# 容器教程
+
+## Docker 使用教程
+
+前面 docker run 后面 `–name litespeed` 中的 `litespeed` 为 `$name`，其代表容器识别符，也就是 `$name=litespeed`。
+
+一、定义name变量，也可以修改为 mysql、redis 等
+
+```bash
+name=litespeed
+```
+
+二、查看容器在线状态及大小
+
+```bsh
+docker ps -as
+```
+
+三、查看容器的运行输出日志
+
+```bsh
+docker logs $name
+```
+
+四、重新启动容器，一般在修改除端口外的配置后使用使修改生效
+
+```bsh
+docker restart $name
+```
+
+五、停止容器的运行
+
+```bsh
+docker stop $name
+```
+
+六、移除容器
+
+```bsh
+docker rm $name
+```
+
+七、查看 docker 容器占用 CPU，内存等信息
+
+```bsh
+docker stats --no-stream
+```
+
+## Docker-Compose 使用教程
+
+::: warning 提示
+首先得进入有 `docker-compose.yml` 模板文件的目录。
+:::
+
+```bash
+docker-compose up ## 临时启动所有容器
+docker-compose up -d ## 持久化启动所有容器
+docker-compose stop ## 停止容器运行
+docker-compose down ## 停止和删除所有容器
+```
+
+如果修改过`docker-compose.yml`文件，则需要重新构建。
+
+```bash
 docker-compose up --build
 ```
-
-### Setting the WebAdmin Password
-We strongly recommend you set your personal password right away.
-```
-bash bin/webadmin.sh my_password
-```
-### Starting a Demo Site
-After running the following command, you should be able to access the WordPress installation with the configured domain. By default the domain is http://localhost.
-```
-bash bin/demosite.sh
-```
-### Creating a Domain and Virtual Host
-```
-bash bin/domain.sh -add example.com
-```
-### Creating a Database
-You can either automatically generate the user, password, and database names, or specify them. Use the following to auto generate:
-```
-bash bin/database.sh -domain example.com
-```
-Use this command to specify your own names, substituting `user_name`, `my_password`, and `database_name` with your preferred values:
-```
-bash bin/database.sh -domain example.com -user user_name -password my_password -database database_name
-```
-### Installing a WordPress Site
-To preconfigure the `wp-config` file, run the `database.sh` script for your domain, before you use the following command to install WordPress:
-```
-./bin/appinstall.sh -app wordpress -domain example.com
-```
-### Applying a Let's Encrypt Certificate
-Use the root domain in this command, and it will check for a certificate and automatically apply one with and without `www`:
-```
-./bin/cert.sh example.com
-```
-
-### Accessing the Database
-After installation, you can use Adminer (formerly phpMinAdmin) to access the database by visiting http://127.0.0.1:8080. The default username is `root`, and the password is the same as the one you supplied in the `.env` file.
-
-## Support & Feedback
-If you still have a question after using OpenLiteSpeed Docker, you have a few options.
-* Join [the GoLiteSpeed Slack community](litespeedtech.com/slack) for real-time discussion
-* Post to [the OpenLiteSpeed Forums](https://forum.openlitespeed.org/) for community support
-* Reporting any issue on [Github ols-docker-env](https://github.com/litespeedtech/ols-docker-env/issues) project
-
-**Pull requests are always welcome**

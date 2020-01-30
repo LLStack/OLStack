@@ -16,10 +16,10 @@ services:
 
   litespeed:
     build:                                                                                                             
-      context: ./Dockerfile/${LITESPEED}/${PHPVER}/                                                                        
+      context: ./Dockerfile/build/${LITESPEED}/${PHPVER}/                                                                        
       args:
-              #extensions: lsphp72 lsphp72-common lsphp72-mysql lsphp72-json                                                                                    
-        extensions:
+        #extensions: lsphp72 lsphp72-common lsphp72-mysql lsphp72-json                                                                                    
+        extensions: vim
     container_name: litespeed
     image: llstack/olstack:${LITESPEED}-${PHPVER}
     env_file:
@@ -43,23 +43,23 @@ services:
       - mysql
       - redis
 
-  adminer:
-    image: dockette/adminer:full
-    container_name: adminer
-    ports:
-      - 8080:80
-    environment:
-      - MEMORY=-1
-
-#  phpmyadmin:
-#    image: phpmyadmin/phpmyadmin:latest
-#    container_name: phpmyadmin
+#  adminer:
+#    image: dockette/adminer:full
+#    container_name: adminer
 #    ports:
-#      - "8081:80"
+#      - 8080:80
 #    environment:
-#      - PMA_HOST=mysql
-#      - PMA_PORT=3306
-#      - TZ=${TimeZone}
+#      - MEMORY=-1
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      - PMA_HOST=mysql
+      - PMA_PORT=3306
+      - TZ=${TimeZone}
 
   redis:
     image: redis:${REDIS_VERSION}
@@ -77,14 +77,6 @@ services:
     environment:
       - TZ=${TimeZone}
 
-#  memcached:
-#    image: memcached:${MEMCACHED_VERSION}
-#    container_name: memcached
-#    ports:
-#      - "11211:11211"
-#    environment:
-#      MEMCACHED_CACHE_SIZE: "${MEMCACHED_CACHE_SIZE}"
-
 #  phpredisadmin:
 #    image: erikdubbelboer/phpredisadmin:latest
 #    container_name: phpredisadmin
@@ -94,3 +86,11 @@ services:
 #      - REDIS_1_HOST=redis
 #      - REDIS_1_PORT=6379
 #      - TZ=${TimeZone}
+
+#  memcached:
+#    image: memcached:${MEMCACHED_VERSION}
+#    container_name: memcached
+#    ports:
+#      - "11211:11211"
+#    environment:
+#      MEMCACHED_CACHE_SIZE: "${MEMCACHED_CACHE_SIZE}"
