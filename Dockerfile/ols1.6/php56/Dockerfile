@@ -24,7 +24,7 @@ RUN curl -O https://openlitespeed.org/preuse/openlitespeed-$olsver.tgz && \
     ./install.sh && \
 	rm -rf ../openlitespeed ../openlitespeed-$olsver.tgz
 
-RUN apt-get install lsphp$phpver lsphp$phpver-curl lsphp$phpver-dbg lsphp$phpver-enchant lsphp$phpver-gd lsphp$phpver-gmp lsphp$phpver-imap \
+RUN apt-get install -y lsphp$phpver lsphp$phpver-curl lsphp$phpver-dbg lsphp$phpver-enchant lsphp$phpver-gd lsphp$phpver-gmp lsphp$phpver-imap \
                     lsphp$phpver-intl lsphp$phpver-ldap lsphp$phpver-mcrypt lsphp$phpver-mysql lsphp$phpver-pspell lsphp$phpver-recode lsphp$phpver-sqlite \
                     lsphp$phpver-tidy lsphp$phpver-xmlrpc lsphp$phpver-xsl && \
 
