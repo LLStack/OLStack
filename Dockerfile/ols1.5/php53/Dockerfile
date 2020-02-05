@@ -4,7 +4,8 @@ ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update && apt-get install apt-utils -y && \
     apt-get install -y wget curl tzdata dialog  && \
-    apt-get install -qq -y --no-install-recommends python python-dev gcc libssl-dev openssl libffi-dev ca-certificates libaugeas0 augeas-lenses python-virtualenv
+    apt-get install -qq -y --no-install-recommends python python-dev gcc libssl-dev openssl libffi-dev ca-certificates libaugeas0 augeas-lenses python-virtualenv && \
+    apt-get install -qq -y libenchant1c2a libfreetype6 libmcrypt4 libxpm4 libjpeg-turbo8 libpng12-0 libxslt1.1 libc-client2007e libvpx-dev libicu52 librecode-dev libtidy-0.99-0 libmysqlclient18
 
 RUN wget https://dl.eff.org/certbot-auto && \
     mv certbot-auto /usr/bin/certbot && \
@@ -23,7 +24,9 @@ RUN curl -O https://openlitespeed.org/preuse/openlitespeed-$olsver.tgz && \
     ./install.sh && \
 	rm -rf ../openlitespeed ../openlitespeed-$olsver.tgz
 
-RUN apt-get install lsphp$phpver lsphp$phpver-* -y && \
+RUN apt-get install lsphp$phpver lsphp$phpver-curl lsphp$phpver-dbg lsphp$phpver-enchant lsphp$phpver-gd lsphp$phpver-gmp lsphp$phpver-imap lsphp$phpver-intl \
+                    lsphp$phpver-ldap lsphp$phpver-mcrypt lsphp$phpver-mysql lsphp$phpver-pspell lsphp$phpver-recode lsphp$phpver-sqlite lsphp$phpver-tidy \
+                    lsphp$phpver-xmlrpc lsphp$phpver-xsl && \
     mv /usr/local/lsws/fcgi-bin/lsphp /usr/local/lsws/fcgi-bin/lsphp-bak && \
     ln -sf /usr/local/lsws/lsphp$phpver/bin/lsphp /usr/local/lsws/fcgi-bin/lsphp && \
     ln -sf /usr/local/lsws/lsphp$phpver/bin/lsphp /usr/bin/lsphp

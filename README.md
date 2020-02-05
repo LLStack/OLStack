@@ -4,6 +4,10 @@
 
 **OLStack 社区容器版**，是基于 Docker 容器化编排的 OpenLiteSpeed 环境。性能比Nginx更胜一筹，基本兼容 Apache HTTPD 生态，主要是不支持自动加载 .htaccss 文件，该版本对操作系统环境没有限制，未来可以应用到非常多的场景中。
 
+OpenLiteSpeed 是 LiteSpeed EnterPrise 的社区版本，相较 Nginx 很多扩展如 Brotli、nginx*-*cache*-*purge 等扩展，会因为更新的不及时导致对最新Stable版本的不支持，同时也没有企业级的保障。 而 OpenLiteSpeed 的组件有官方进行主要维护和更新，提供商用企业级的体验。
+
+在性能上，LiteSpeed Tech 提供的 BenchMark 中，在 WordPress、Joomla、OpenCart、ModSecurity、小型静态文件、HTTP/2、HTTP/3 的测试上都比 Apache HTTPD 和 Nginx 有这更好的表现，这不仅仅是跑个 Hello World 而是进行一个完整的测试。
+
 这是 [litespeedtech](https://github.com/litespeedtech)/**[ols-docker-env](https://github.com/litespeedtech/ols-docker-env)** 的一个复克（Fork）。
 
 # 安装环境
