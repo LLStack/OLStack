@@ -33,7 +33,8 @@ RUN apt-get install -y lsphp$phpver lsphp$phpver-curl lsphp$phpver-dbg lsphp$php
 
 RUN wget -O /usr/local/lsws/admin/misc/lsup.sh \
     https://raw.githubusercontent.com/litespeedtech/openlitespeed/master/dist/admin/misc/lsup.sh && \
-    chmod +x /usr/local/lsws/admin/misc/lsup.sh
+    chmod +x /usr/local/lsws/admin/misc/lsup.sh && \
+    ln -s /usr/local/lsws/lsphp$olsver/bin/php /usr/bin/php
 
 EXPOSE 80 443 7080
 

@@ -11,7 +11,7 @@ RUN apt-get install -y software-properties-common && \
     apt-get update && \
     apt-get install -y certbot
 
-ENV olsver 1.6.6
+ENV olsver 1.6.8
 ENV phpver 74
 
 RUN curl -O https://openlitespeed.org/preuse/openlitespeed-$olsver.tgz && \
@@ -28,7 +28,8 @@ RUN apt-get install lsphp$phpver lsphp$phpver-common lsphp$phpver-mysql lsphp$ph
 
 RUN wget -O /usr/local/lsws/admin/misc/lsup.sh \
     https://raw.githubusercontent.com/litespeedtech/openlitespeed/master/dist/admin/misc/lsup.sh && \
-    chmod +x /usr/local/lsws/admin/misc/lsup.sh
+    chmod +x /usr/local/lsws/admin/misc/lsup.sh && \
+    ln -s /usr/local/lsws/lsphp$olsver/bin/php /usr/bin/php
 
 EXPOSE 80 443 7080
 
