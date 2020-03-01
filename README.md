@@ -43,10 +43,10 @@ cd OLStack
 curl -s https://get.docker.com | sudo sh
 ```
 
-二、安装 Docker-Compose 环境，其中`1.25.3`  可以根据 [**最新版本**](https://github.com/docker/compose/releases) 修改，已有可以跳过
+二、安装 Docker-Compose 环境，其中`1.25.4`  可以根据 [**最新版本**](https://github.com/docker/compose/releases) 修改，已有可以跳过
 
 ```bash
-curl -L https://github.com/docker/compose/releases/download/1.25.3/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+curl -L https://github.com/docker/compose/releases/download/1.25.4/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 ```
 
@@ -204,20 +204,7 @@ DOMAIN=localhost
 
 这里举例几个 OLStack 的修改方案：
 
-**一、安装预装软件**
-
-```yaml {6}
-  litespeed:
-    build:                                                                                                             
-      context: ./Dockerfile/${LITESPEED}/${PHPVER}/                                                                        
-      args:
-        #extensions: lsphp72 lsphp72-common lsphp72-mysql lsphp72-json                                                                                    
-        extensions:
-```
-
-`extensions:` 后可以跟 http://rpms.litespeedtech.com/ 中提供的 LSPHP 软件，和 Ubuntu 默认提供的软件。
-
-**二、挂载目录**
+**一、挂载目录**
 
 ```yaml
     volumes:
@@ -225,13 +212,13 @@ DOMAIN=localhost
         - ./Configfile/lsws/admin-conf:/usr/local/lsws/admin/conf
         - ./bin/container:/usr/local/bin
         - ./sites:/var/www/vhosts/
-        - ./certs:/etc/letsencrypt/
+        - ./acme:/root/.acme.sh/
         - ./logs/lsws/:/usr/local/lsws/logs/
 ```
 
 `:`前的是宿主机（这台服务器）的对应目录，这里使用相对路径。`:`后的是容器主机所对应的目录，如果有其他的目录挂载需求可以修改`volumes:`进行挂载。
 
-**三、开放的端口**
+二、开放的端口**
 
 ```yaml
     ports:
@@ -249,7 +236,7 @@ DOMAIN=localhost
 
 安全起见，可以将`- 7080:7080` 修改为更安全的例如：`- 27080:7080` 这样的非默认端口，减少被安全攻击的可能。
 
-**四、启动带#的功能**
+**三、启动带#的功能**
 
 默认绿的带 `#` 的都是不启用的功能：
 
@@ -281,7 +268,7 @@ adminer、phpmyadmin、phpredisadmin 在不使用的时候，建议关闭。
         - ./Configfile/lsws/admin-conf:/usr/local/lsws/admin/conf  ## OLS的管理控制台目录
         - ./bin/container:/usr/local/bin  ## 相关工具文件
         - ./sites:/var/www/vhosts/  ## 虚拟主机存放的位置
-        - ./certs:/etc/letsencrypt/  ## Let's Encrypt 生成的证书存放地址
+        - ./acme:/root/.acme.sh/  ## Let's Encrypt 生成的证书存放地址
         - ./logs/lsws/:/usr/local/lsws/logs/  ##OLS 的日志地址
 ```
 
@@ -357,13 +344,13 @@ domain.sh -del <your_domain.com>
 
 下面命令会自动生成用户名、密码和数据库名。使用以下内容自动生成：
 
-```
+```bash
 bash bin/database.sh -domain <your_domain.com>
 ```
 
 用如下方式进行自定义用户名、密码和数据库名，替换`user_name`，`my_password`以及`database_name`为想要的值：
 
-```
+```bash
 bash bin/database.sh -domain <your_domain.com> -user user_name -password my_password -database database_name
 ```
 
@@ -377,10 +364,10 @@ bash bin/database.sh -domain <your_domain.com> -user user_name -password my_pass
 
 ### 配置SSL证书
 
-首先得确保相关域名的虚拟主机已经创建，并且解析已经做对。 将使用 CertBot 自动创建 Let's Encrypt 免费SSL证书。
+首先得确保相关域名的虚拟主机已经创建，并且解析已经做对。 将使用 ACME 自动创建 Let's Encrypt 免费SSL证书。
 
-```bashba s
-./bin/cert.sh <your_domain.com>
+```bash
+./bin/acme.sh <your_domain.com>
 ```
 
 ### 更新版本
@@ -419,37 +406,37 @@ name=litespeed
 
 二、查看容器在线状态及大小
 
-```bsh
+```bash
 docker ps -as
 ```
 
 三、查看容器的运行输出日志
 
-```bsh
+```bash
 docker logs $name
 ```
 
 四、重新启动容器，一般在修改除端口外的配置后使用使修改生效
 
-```bsh
+```bash
 docker restart $name
 ```
 
 五、停止容器的运行
 
-```bsh
+```bash
 docker stop $name
 ```
 
 六、移除容器
 
-```bsh
+```bash
 docker rm $name
 ```
 
 七、查看 docker 容器占用 CPU，内存等信息
 
-```bsh
+```bash
 docker stats --no-stream
 ```
 
@@ -471,3 +458,9 @@ docker-compose down ## 停止和删除所有容器
 ```bash
 docker-compose up --build
 ```
+
+# 其他链接
+
+[LLStack OLStack 社区版容器镜像](https://github.com/LLStack/OLStack-Dockerfiles)
+
+[米饭粑](https://www.mf8.biz/)
