@@ -20,8 +20,8 @@ services:
     env_file:
       - .env
     volumes:
-        - ./Configfile/lsws/conf:/usr/local/lsws/conf
-        - ./Configfile/lsws/admin-conf:/usr/local/lsws/admin/conf
+        - ./config/lsws/conf:/usr/local/lsws/conf
+        - ./config/lsws/admin-conf:/usr/local/lsws/admin/conf
         - ./bin/container:/usr/local/bin
         - ./sites:/var/www/vhosts/
         - ./acme:/root/.acme.sh/
@@ -64,7 +64,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - ./Configfile/redis/redis.conf:/etc/redis.conf
+      - ./config/redis/redis.conf:/etc/redis.conf
       - ./data/redis/data:/data
       - ./logs/redis/:/var/log/redis/
     restart: always

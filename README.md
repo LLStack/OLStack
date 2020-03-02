@@ -208,8 +208,8 @@ DOMAIN=localhost
 
 ```yaml
     volumes:
-        - ./Configfile/lsws/conf:/usr/local/lsws/conf
-        - ./Configfile/lsws/admin-conf:/usr/local/lsws/admin/conf
+        - ./config/lsws/conf:/usr/local/lsws/conf
+        - ./config/lsws/admin-conf:/usr/local/lsws/admin/conf
         - ./bin/container:/usr/local/bin
         - ./sites:/var/www/vhosts/
         - ./acme:/root/.acme.sh/
@@ -264,8 +264,8 @@ adminer、phpmyadmin、phpredisadmin 在不使用的时候，建议关闭。
 
 ```yaml
     volumes:
-        - ./Configfile/lsws/conf:/usr/local/lsws/conf  ## OLS的配置文件目录
-        - ./Configfile/lsws/admin-conf:/usr/local/lsws/admin/conf  ## OLS的管理控制台目录
+        - ./config/lsws/conf:/usr/local/lsws/conf  ## OLS的配置文件目录
+        - ./config/lsws/admin-conf:/usr/local/lsws/admin/conf  ## OLS的管理控制台目录
         - ./bin/container:/usr/local/bin  ## 相关工具文件
         - ./sites:/var/www/vhosts/  ## 虚拟主机存放的位置
         - ./acme:/root/.acme.sh/  ## Let's Encrypt 生成的证书存放地址
@@ -293,12 +293,12 @@ adminer、phpmyadmin、phpredisadmin 在不使用的时候，建议关闭。
 
 ```yaml
     volumes:
-      - ./Configfile/redis/redis.conf:/etc/redis.conf
+      - ./config/redis/redis.conf:/etc/redis.conf
       - ./data/redis/data:/data
       - ./logs/redis/:/var/log/redis/
 ```
 
-`- ./Configfile/redis/redis.conf:/etc/redis.conf` 配置文件，有中文注释
+`- ./config/redis/redis.conf:/etc/redis.conf` 配置文件，有中文注释
 
 ` - ./data/redis/data:/data` 持久化物理文件目录
 
