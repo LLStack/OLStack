@@ -107,10 +107,12 @@ TimeZone=Asia/Shanghai
 **二、OpenLiteSpeed 版本**，目前 OLS 提供了 1.6.X 和 1.5.X 两个版本，未来可能提供更多的版本。
 
 ```bash
-LITESPEED=ols1.6
+LITESPEED=ols1.6.9
 ```
 
-可供修改的选项：`ols1.6` 、`ols1.5`
+可供修改的选项：`ols1.6.9` 、`ols1.5.11`以及以上版本，版本查看：
+
+https://openlitespeed.org/release-log/
 
 **三、PHP版本**，由 LiteSpeed 官方提供支持的 LSPHP 版本，和很多虚拟主机使用的企业版是一样的。
 
@@ -176,21 +178,7 @@ REDIS_VERSION=5.0-alpine
 
 可供修改的选项：`6.0-rc-alpine`、`5.0-alpine`、`4.0-alpine`、`3.2-alpine`、`2.8`
 
-**八、MEMCACHED_VERSION，** 配置 Memcached 的版本。 **如果要使用，请把最前面的 `#` 去掉**
-
-```bash
-#MEMCACHED_VERSION=1.5-alpine
-```
-
-可供修改的选项：`1.5-alpine`、`1.4-alpine`
-
-**九、MEMCACHED_CACHE_SIZE，** 配置 Memcached 的缓存大小，根据服务器实际内存情况选择，建议是服务器内存的 1/8。**如果要使用，请把最前面的 `#` 去掉**
-
-```bash
-#MEMCACHED_CACHE_SIZE=128
-```
-
-**十、DOMAIN**，默认配置的域名，可以保持默认，也可以输入为自己的默认域名，建议后面新建主机。
+**八、DOMAIN**，默认配置的域名，可以保持默认，也可以输入为自己的默认域名，建议后面新建主机。
 
 ```bash
 DOMAIN=localhost
@@ -364,19 +352,77 @@ bash bin/database.sh -domain <your_domain.com> -user user_name -password my_pass
 
 ### 配置SSL证书
 
-首先得确保相关域名的虚拟主机已经创建，并且解析已经做对。 将使用 ACME 自动创建 Let's Encrypt 免费SSL证书。
+SSL 证书通过 ACME 申请 Let's Encrypt 免费证书实现，首次运行需要安装 ACME。
+
+#### 安装ACME
+
+仅 **第一次** 运行需要安装ACME，带电子邮件通知运行：
 
 ```bash
-./bin/acme.sh <your_domain.com>
+./bin/acme.sh --install -email <EMAIL_ADDR>
 ```
 
-### 更新版本
+例如：
+
+```bash
+./bin/acme.sh --install -email cert@mf8.biz
+```
+
+不需要电子邮件通知运行：
+
+```
+./bin/acme.sh --install --no-email
+```
+
+#### 申请证书
+
+在此命令中使用根域名，不需要填写 `www.` 会自动添加`www.`：
+
+```
+./bin/acme.sh -domain <yourdomain.com>
+```
+
+例如：
+
+```bash
+./bin/acme.sh -domain mf8.biz
+```
+
+则会自动签发` www.mf8.biz` 和 `mf8.biz` 两个证书
+
+### 更新OLS版本
 
 要将 OpenLiteSpeed 升级到最新的稳定版本，请运行
 
 ```bash
 bash bin/webadmin.sh -lsup
 ```
+
+### 安装WAF防火墙
+
+使用 ModSecurity 实现防火墙WAF功能：
+
+Web服务器上启用WAF ：
+
+```bash
+bash bin/webadmin.sh -modsec enable
+```
+
+Web服务器上禁用WAF ：
+
+```
+bash bin/webadmin.sh -modsec disable
+```
+
+### phpMyAdmin
+
+访问地址：
+
+http://yourip:8080
+
+http://yourip:8443
+
+默认用户名是`root`，密码与您在`.env`文件中提供的密码相同。
 
 ### 进入容器内部
 

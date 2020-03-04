@@ -46,15 +46,13 @@ services:
 #    environment:
 #      - MEMORY=-1
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin:latest
-    container_name: phpmyadmin
-    ports:
-      - "8080:80"
-    environment:
-      - PMA_HOST=mysql
-      - PMA_PORT=3306
-      - TZ=${TimeZone}
+phpmyadmin:
+  image: bitnami/phpmyadmin:latest
+  ports:
+    - 8080:80
+    - 8443:443
+  environment:
+      DATABASE_HOST: mysql
 
   redis:
     image: redis:${REDIS_VERSION}
