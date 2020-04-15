@@ -7,13 +7,25 @@ SQL_USER=''
 SQL_PASS=''
 ANY="'%'"
 SET_OK=0
+EPACE='        '
+
+echow(){
+    FLAG=${1}
+    shift
+    echo -e "\033[1m${EPACE}${FLAG}\033[0m${@}"
+}
 
 help_message(){
-    echo 'Command [-domain xxx]'
-    echo 'Command [-domain xxx] [-user xxx] [-password xxx] [-database xxx]'
-    echo 'Example 1: database.sh -domain example.com'
-    echo 'Example 2: database.sh -domain example.com -user USERNAME -password PASSWORD -database DATABASENAME'
-    echo 'Script will auto assign database & username by the domain and random password for example 1'
+    echo -e "\033[1mOPTIONS\033[0m"
+    echow '-D, --domain [DOMAIN_NAME]'
+    echo "${EPACE}${EPACE}Example: database.sh -D example.com"
+    echo "${EPACE}${EPACE}Will auto generate Database/username/password for the domain"
+    echow '-D, --domain [DOMAIN_NAME] -U, --user [xxx] -P, --password [xxx] -DB, --database [xxx]'
+    echo "${EPACE}${EPACE}Example: database.sh -D example.com -U USERNAME -P PASSWORD -DB DATABASENAME"
+    echo "${EPACE}${EPACE}Will create Database/username/password by given"
+    echow '-H, --help'
+    echo "${EPACE}${EPACE}Display help and exit."
+    exit 0    
 }
 
 check_input(){
@@ -66,17 +78,20 @@ EOT
     fi    
 }
 
-add_sql_client(){
-    docker-compose exec mysql su -c 'apk add mysql-client'
-}
-
 check_db_access(){
-    #add_sql_client
     docker-compose exec mysql su -c "mysql -uroot -p${MYSQL_ROOT_PASSWORD} -e 'status'" >/dev/null 2>&1
     if [ ${?} != 0 ]; then
-        echo "DB access failed, please check!"
+        echo '[X] DB access failed, please check!'
         exit 1
     fi    
+}
+
+check_db_exist(){
+    docker-compose exec mysql su -c "test -e /var/lib/mysql/${1}"
+    if [ ${?} = 0 ]; then
+        echo "Database ${1} already exist, skip DB creation!"
+        exit 0    
+    fi      
 }
 
 db_setup(){  
@@ -92,6 +107,7 @@ auto_setup_main(){
     gen_pass
     trans_name ${DOMAIN}
     auto_name
+    check_db_exist ${SQL_DB}
     check_db_access
     db_setup
     display_credential
@@ -100,6 +116,7 @@ auto_setup_main(){
 
 specify_setup_main(){
     specify_name
+    check_db_exist ${SQL_DB}
     check_db_access
     db_setup
     display_credential
@@ -120,16 +137,16 @@ while [ ! -z "${1}" ]; do
         -[hH] | -help | --help)
             help_message
             ;;
-        -d | -D | -domain) shift
+        -[dD] | -domain| --domain) shift
             DOMAIN="${1}"
             ;;
-        -u | -U | -user) shift
+        -[uU] | -user | --user) shift
             SQL_USER="${1}"
             ;;
-        -p | -P | -password) shift
+        -[pP] | -password| --password) shift
             SQL_PASS="'${1}'"
             ;;            
-        -db | -DB | -database) shift
+        -db | -DB | -database| --database) shift
             SQL_DB="${1}"
             ;;            
         *) 

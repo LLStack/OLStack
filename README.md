@@ -1,3 +1,9 @@
+---
+title: OLStack 使用手册
+sidebar: auto
+sidebarDepth: 2
+---
+
 # 介绍
 
 官方支持网站：https://www.llstack.com/ols/
@@ -352,7 +358,7 @@ bash bin/database.sh -domain <your_domain.com> -user user_name -password my_pass
 
 ### 配置SSL证书
 
-SSL 证书通过 ACME 申请 Let's Encrypt 免费证书实现，首次运行需要安装 ACME。
+首先得确保相关域名的虚拟主机已经创建，并且解析已经做对。 将使用 ACME 自动创建 Let's Encrypt 免费SSL证书。
 
 #### 安装ACME
 
