@@ -1,1 +1,6 @@
 latest.yml
+# mac
+.DS_Store
+
+# windows
+Thumbs.db
