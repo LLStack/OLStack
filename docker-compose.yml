@@ -13,6 +13,7 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    restart: always
 
   litespeed:
     container_name: litespeed
@@ -46,13 +47,14 @@ services:
 #    environment:
 #      - MEMORY=-1
 
-phpmyadmin:
-  image: bitnami/phpmyadmin:latest
-  ports:
-    - 8080:80
-    - 8443:443
-  environment:
+  phpmyadmin:
+    image: bitnami/phpmyadmin:latest
+    ports:
+      - 8080:80
+      - 8443:443
+    environment:
       DATABASE_HOST: mysql
+    restart: always
 
   redis:
     image: redis:${REDIS_VERSION}
@@ -79,6 +81,7 @@ phpmyadmin:
 #      - REDIS_1_HOST=redis
 #      - REDIS_1_PORT=6379
 #      - TZ=${TimeZone}
+#    restart: always
 
 #  memcached:
 #    image: memcached:${MEMCACHED_VERSION}
@@ -87,3 +90,4 @@ phpmyadmin:
 #      - "11211:11211"
 #    environment:
 #      MEMCACHED_CACHE_SIZE: "${MEMCACHED_CACHE_SIZE}"
+#    restart: always
